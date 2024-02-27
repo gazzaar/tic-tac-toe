@@ -20,11 +20,12 @@ function Gameboard() {
 
   // This is where we get the cell by passing the row number and then take the column from that row
   const addCells = (rowNum, columnNum, player) => {
-    const addRow = board.map((row, i, arr) => arr[rowNum])[rowNum];
-    const addColumn = addRow[columnNum];
-    const cell = addColumn;
-    if (cell.getValue()) return;
-    cell.addMark(player);
+    const cell = board[rowNum][columnNum];
+    if (cell.getValue() === '') {
+      cell.addMark(player);
+      return true; // Cell added successfully
+    }
+    return false; // Cell already occupied
   };
 
   // This method will be used to print our board to the console.
@@ -38,21 +39,76 @@ function Gameboard() {
   };
 
   const gameOver = () => {
-    let over = true;
-    const filtered = board.filter((row) =>
-      row.forEach((column) => {
-        if (column.getValue() == '') {
-          over = false;
-        }
-      })
-    );
+    if (board.every((row) => row.every((cell) => cell.getValue() !== ''))) {
+      return true;
+    }
 
-    return over;
+    // Check for a winner
+    const winningCombination = getWinningCombination();
+    if (winningCombination) {
+      return true; // Game over, there's a winner
+    }
+    return false; // Game is still ongoing
+  };
+
+  const getWinningCombination = () => {
+    // Check rows
+    for (let i = 0; i < 3; i++) {
+      if (
+        board[i][0].getValue() !== '' &&
+        board[i][0].getValue() === board[i][1].getValue() &&
+        board[i][0].getValue() === board[i][2].getValue()
+      ) {
+        return [
+          [i, 0],
+          [i, 1],
+          [i, 2],
+        ]; // Return winning combination
+      }
+    }
+    // Check columns
+    for (let j = 0; j < 3; j++) {
+      if (
+        board[0][j].getValue() !== '' &&
+        board[0][j].getValue() === board[1][j].getValue() &&
+        board[0][j].getValue() === board[2][j].getValue()
+      ) {
+        return [
+          [0, j],
+          [1, j],
+          [2, j],
+        ]; // Return winning combination
+      }
+    }
+    // Check diagonals
+    if (
+      board[0][0].getValue() !== '' &&
+      board[0][0].getValue() === board[1][1].getValue() &&
+      board[0][0].getValue() === board[2][2].getValue()
+    ) {
+      return [
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ]; // Return winning combination
+    }
+    if (
+      board[0][2].getValue() !== '' &&
+      board[0][2].getValue() === board[1][1].getValue() &&
+      board[0][2].getValue() === board[2][0].getValue()
+    ) {
+      return [
+        [0, 2],
+        [1, 1],
+        [2, 0],
+      ]; // Return winning combination
+    }
+    return null; // No winning combination found
   };
 
   // Here, we provide an interface for the rest of our
   // application to interact with the board
-  return { getBoard, printBoard, addCells, gameOver };
+  return { getBoard, printBoard, addCells, gameOver, getWinningCombination };
 }
 
 /*
@@ -116,30 +172,27 @@ function GameController(
   };
 
   const playRound = (row, column) => {
-    // Drop a token for the current player
     console.log(
       `Add ${getActivePlayer().name}'s ${
         getActivePlayer().move
       } into row ${row} column ${column}...`
     );
-    board.addCells(row, column, getActivePlayer().token);
-
-    /*  This is where we would check for a winner and handle that logic,
-        such as a win message. */
-    const checkWinner = () => {
-      if (!board.gameOver()) {
-        console.log('Game is not over');
+    if (board.addCells(row, column, getActivePlayer().token)) {
+      if (board.gameOver()) {
+        const winner = board.getWinningCombination()
+          ? getActivePlayer().name
+          : "It's a draw!";
+        board.printBoard();
+        console.log(`Game over. ${winner} wins!`);
       } else {
-        console.log('Game over');
+        switchPlayerTurn();
+        printNewRound();
       }
-      console.log(board.gameOver());
-    };
-
-    // Switch player turn
-    checkWinner();
-    switchPlayerTurn();
-    printNewRound();
+    } else {
+      console.log('Cell already occupied. Try again.');
+    }
   };
+
   // Initial play game message
   printNewRound();
 
@@ -148,17 +201,13 @@ function GameController(
   return {
     playRound,
     getActivePlayer,
+    printNewRound,
   };
 }
 
 const game = GameController();
-
 game.playRound(0, 0);
-game.playRound(1, 1);
 game.playRound(0, 2);
-game.playRound(0, 1);
-game.playRound(1, 0);
-game.playRound(2, 0);
-game.playRound(2, 1);
-game.playRound(2, 2);
+game.playRound(1, 1);
 game.playRound(1, 2);
+game.playRound(2, 2);
