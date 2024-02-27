@@ -37,20 +37,33 @@ function Gameboard() {
     console.log(boardWithCellValues);
   };
 
+  const gameOver = () => {
+    let over = true;
+    const filtered = board.filter((row) =>
+      row.forEach((column) => {
+        if (column.getValue() == '') {
+          over = false;
+        }
+      })
+    );
+
+    return over;
+  };
+
   // Here, we provide an interface for the rest of our
   // application to interact with the board
-  return { getBoard, printBoard, addCells };
+  return { getBoard, printBoard, addCells, gameOver };
 }
 
 /*
  ** A Cell represents one "square" on the board and can have one of
- ** 0: no token is in the square,
+ ** "": no token is in the square,
  ** O: noughts,
  ** X: crosses
  */
 
 function Cell() {
-  let value = 0;
+  let value = '';
 
   // Accept a player's token to change the value of the cell
   const addMark = (player) => {
@@ -113,12 +126,20 @@ function GameController(
 
     /*  This is where we would check for a winner and handle that logic,
         such as a win message. */
+    const checkWinner = () => {
+      if (!board.gameOver()) {
+        console.log('Game is not over');
+      } else {
+        console.log('Game over');
+      }
+      console.log(board.gameOver());
+    };
 
     // Switch player turn
+    checkWinner();
     switchPlayerTurn();
     printNewRound();
   };
-
   // Initial play game message
   printNewRound();
 
