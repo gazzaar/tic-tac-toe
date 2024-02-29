@@ -17,6 +17,16 @@ html {
 body {
   font-family: Arial, Helvetica, sans-serif;
   background-color: #1d2021;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.heading-primary {
+  font-size: 3.5rem;
+  color: #de2b24;
 }
 
 .container {
@@ -25,25 +35,80 @@ body {
   flex-wrap: wrap; /* Allow cells to wrap to the next line */
   align-items: center;
   justify-content: center;
-  gap: 3px; /* Adjust the gap between cells */
+  margin-top: 3rem;
+}
+
+.container,
+.row,
+.cell {
+  width: 400px;
 }
 
 .row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  border: 2px solid #aab5b6;
+  border-radius: 4px;
+}
+
+.row:nth-child(2) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.row:nth-child(4) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.row:nth-child(3) {
+  border-top: none;
+  border-bottom: none;
+  border-radius: 0;
 }
 
 .cell {
-  width: 5rem;
-  height: 5rem;
   font-size: 3rem;
+  color: #458588;
+  height: 6rem;
   border: none;
-  border: 1px solid grey;
   background: none;
-  background-color: orangered;
+  border-right: 2px solid #aab5b6;
   text-align: center;
   cursor: pointer;
-  box-sizing: border-box; /* Include border and padding in the width calculation */
+}
+.cell:last-child {
+  border-right: none;
+}
+
+.cell:focus {
+  outline: none;
+}
+
+.turn {
+  font-size: 1.8rem;
+  color: #d7991d;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  border: none;
+  background: none;
+  font-size: 1.8rem;
+  color: #1d2021;
+  padding: 0.8rem 1.4rem;
+  background-color: #d65d0e;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.btn:focus {
+  outline: none;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn-clear {
+  margin-top: 2.5rem;
 }
