@@ -106,9 +106,25 @@ function Gameboard() {
     return null; // No winning combination found
   };
 
+  //  Clear the board
+  const clearBoard = () => {
+    board.forEach((row) => {
+      row.forEach((cell) => {
+        cell.addMark('');
+      });
+    });
+  };
+
   // Here, we provide an interface for the rest of our
   // application to interact with the board
-  return { getBoard, printBoard, addCells, gameOver, getWinningCombination };
+  return {
+    getBoard,
+    printBoard,
+    addCells,
+    gameOver,
+    getWinningCombination,
+    clearBoard,
+  };
 }
 
 /*
@@ -203,14 +219,16 @@ function GameController(
     getActivePlayer,
     printNewRound,
     getBoard: board.getBoard,
+    clearBoard: board.clearBoard,
   };
 }
-
 // UI Game
 
 const ScreenController = function () {
   const game = GameController();
   const container = document.querySelector('.container');
+  let rowDiv, cellButton;
+  // const clear = game.clearBoard();
 
   const updateScreen = () => {
     container.innerHTML = '';
@@ -220,15 +238,15 @@ const ScreenController = function () {
     // Display player's turn
     const playerTurnDiv = document.createElement('div');
     playerTurnDiv.classList.add('turn');
-    playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+    playerTurnDiv.textContent = `${activePlayer.name}'s turn`;
     container.appendChild(playerTurnDiv);
 
     // Render board squares
     board.forEach((row, rowIndex) => {
-      const rowDiv = document.createElement('div');
+      rowDiv = document.createElement('div');
       rowDiv.classList.add('row');
       row.forEach((cell, columnIndex) => {
-        const cellButton = document.createElement('button');
+        cellButton = document.createElement('button');
         cellButton.classList.add('cell');
         cellButton.dataset.row = rowIndex;
         cellButton.dataset.column = columnIndex;
@@ -254,6 +272,13 @@ const ScreenController = function () {
     game.playRound(selectedRow, selectedColumn);
     updateScreen();
   }
+
+  // Clear the board
+  const btnClear = document.querySelector('.btn-clear');
+  btnClear.addEventListener('click', () => {
+    game.clearBoard();
+    updateScreen();
+  });
 
   // Initial render
   updateScreen();
