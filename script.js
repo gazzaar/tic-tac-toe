@@ -202,12 +202,60 @@ function GameController(
     playRound,
     getActivePlayer,
     printNewRound,
+    getBoard: board.getBoard,
   };
 }
 
-const game = GameController();
-game.playRound(0, 0);
-game.playRound(0, 2);
-game.playRound(1, 1);
-game.playRound(1, 2);
-game.playRound(2, 2);
+// UI Game
+
+const ScreenController = function () {
+  const game = GameController();
+  const container = document.querySelector('.container');
+
+  const updateScreen = () => {
+    container.innerHTML = '';
+    const board = game.getBoard();
+    const activePlayer = game.getActivePlayer();
+
+    // Display player's turn
+    const playerTurnDiv = document.createElement('div');
+    playerTurnDiv.classList.add('turn');
+    playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+    container.appendChild(playerTurnDiv);
+
+    // Render board squares
+    board.forEach((row, rowIndex) => {
+      const rowDiv = document.createElement('div');
+      rowDiv.classList.add('row');
+      row.forEach((cell, columnIndex) => {
+        const cellButton = document.createElement('button');
+        cellButton.classList.add('cell');
+        cellButton.dataset.row = rowIndex;
+        cellButton.dataset.column = columnIndex;
+        cellButton.textContent = cell.getValue();
+        rowDiv.appendChild(cellButton);
+      });
+
+      container.appendChild(rowDiv);
+    });
+  };
+
+  // Add event listener for cell clicks
+  container.addEventListener('click', clickHandlerBoard);
+
+  // Modify clickHandlerBoard function to handle cell clicks
+  function clickHandlerBoard(e) {
+    const clickedCell = e.target.closest('.cell');
+    if (!clickedCell) return; // Exit if the click is not on a cell
+
+    const selectedRow = parseInt(clickedCell.dataset.row);
+    const selectedColumn = parseInt(clickedCell.dataset.column);
+
+    game.playRound(selectedRow, selectedColumn);
+    updateScreen();
+  }
+
+  // Initial render
+  updateScreen();
+};
+ScreenController();
