@@ -1,7 +1,5 @@
 'use strict';
 
-///////////////////////////////////////
-
 function Gameboard() {
   const rows = 3;
   const columns = 3;
@@ -31,12 +29,11 @@ function Gameboard() {
   // This method will be used to print our board to the console.
   // It is helpful to see what the board looks like after each turn as we play,
   // but we won't need it after we build our UI
-  const printBoard = () => {
-    const boardWithCellValues = board.map((row) =>
-      row.map((cell) => cell.getValue())
-    );
-    console.log(boardWithCellValues);
-  };
+  // const printBoard = () => {
+  // const boardWithCellValues = board.map((row) =>
+  //   row.map((cell) => cell.getValue())
+  // );
+  // };
 
   const gameOver = () => {
     if (board.every((row) => row.every((cell) => cell.getValue() !== ''))) {
@@ -119,7 +116,6 @@ function Gameboard() {
   // application to interact with the board
   return {
     getBoard,
-    printBoard,
     addCells,
     gameOver,
     getWinningCombination,
@@ -161,7 +157,7 @@ function GameController(
   playerTwoName = 'Player Two'
 ) {
   const board = Gameboard();
-
+  let message;
   const players = [
     {
       name: playerOneName,
@@ -183,35 +179,34 @@ function GameController(
   const getActivePlayer = () => activePlayer;
 
   const printNewRound = () => {
-    board.printBoard();
-    console.log(`${getActivePlayer().name}'s turn.`);
+    message = `${getActivePlayer().name}'s turn`;
   };
 
   const playRound = (row, column) => {
-    console.log(
-      `Add ${getActivePlayer().name}'s ${
-        getActivePlayer().move
-      } into row ${row} column ${column}...`
-    );
     if (board.addCells(row, column, getActivePlayer().token)) {
       if (board.gameOver()) {
         const winner = board.getWinningCombination()
           ? getActivePlayer().name
           : "It's a draw!";
-        board.printBoard();
-        console.log(`Game over. ${winner} wins!`);
+
+        if (winner === "It's a draw!") {
+          message = `Game over. ${winner}`;
+        } else {
+          message = `Game over. ${winner} wins!`;
+        }
       } else {
         switchPlayerTurn();
         printNewRound();
       }
     } else {
-      console.log('Cell already occupied. Try again.');
+      message = 'Cell already occupied. Try again.';
     }
   };
 
   // Initial play game message
   printNewRound();
 
+  const getMessage = () => message;
   // For the console version, we will only use playRound, but we will need
   // getActivePlayer for the UI version, so I'm revealing it now
   return {
@@ -220,6 +215,7 @@ function GameController(
     printNewRound,
     getBoard: board.getBoard,
     clearBoard: board.clearBoard,
+    getMessage,
   };
 }
 // UI Game
@@ -233,12 +229,11 @@ const ScreenController = function () {
   const updateScreen = () => {
     container.innerHTML = '';
     const board = game.getBoard();
-    const activePlayer = game.getActivePlayer();
 
     // Display player's turn
     const playerTurnDiv = document.createElement('div');
     playerTurnDiv.classList.add('turn');
-    playerTurnDiv.textContent = `${activePlayer.name}'s turn`;
+    playerTurnDiv.textContent = game.getMessage();
     container.appendChild(playerTurnDiv);
 
     // Render board squares
@@ -264,7 +259,7 @@ const ScreenController = function () {
   // Modify clickHandlerBoard function to handle cell clicks
   function clickHandlerBoard(e) {
     const clickedCell = e.target.closest('.cell');
-    if (!clickedCell) return; // Exit if the click is not on a cell
+    if (!clickedCell) return;
 
     const selectedRow = parseInt(clickedCell.dataset.row);
     const selectedColumn = parseInt(clickedCell.dataset.column);
@@ -277,6 +272,7 @@ const ScreenController = function () {
   const btnClear = document.querySelector('.btn-clear');
   btnClear.addEventListener('click', () => {
     game.clearBoard();
+    game.printNewRound();
     updateScreen();
   });
 
