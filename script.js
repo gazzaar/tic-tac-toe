@@ -221,7 +221,22 @@ function GameController(
 // UI Game
 
 const ScreenController = function () {
-  const game = GameController();
+  // Get players Name
+  const playerOne = document.getElementById('player-1');
+  const playerTwo = document.getElementById('player-2');
+  const playBtn = document.querySelector('.btn-submit');
+  let playerOneName, playerTwoName, game;
+  playBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (playerOne.value === '' || playerTwo.value === '') return;
+    playerOneName = playerOne.value;
+    playerTwoName = playerTwo.value;
+    game = GameController(playerOneName, playerTwoName);
+    updateScreen();
+    playerOne.value = playerTwo.value = '';
+  });
+  game = GameController(playerOneName, playerTwoName);
+
   const container = document.querySelector('.container');
   let rowDiv, cellButton;
   // const clear = game.clearBoard();
@@ -271,6 +286,8 @@ const ScreenController = function () {
   // Clear the board
   const btnClear = document.querySelector('.btn-clear');
   btnClear.addEventListener('click', () => {
+    playerOneName = playerTwoName = '';
+    game = GameController();
     game.clearBoard();
     game.printNewRound();
     updateScreen();
