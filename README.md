@@ -3,9 +3,8 @@
 [![Stand With Palestine](https://raw.githubusercontent.com/TheBSD/StandWithPalestine/main/banner-no-action.svg)](https://TheBSD.github.io/StandWithPalestine/)
 
 A Tic Tac Toe game you can play in your browser!
-![demo](images/tic-tac-toe-demo.jpg)
 
-- [Live demo👉](https://fathyelgazar.github.io/tic-tac-toe/)
+[![demo](images/tic-tac-toe-demo.jpg)](https://fathyelgazar.github.io/tic-tac-toe/)
 
 ### Features
 
