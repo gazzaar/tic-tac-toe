@@ -4,7 +4,7 @@
 
 A Tic Tac Toe game you can play in your browser!
 
-[![demo](images/tic-tac-toe-demo.jpg)](https://fathyelgazar.github.io/tic-tac-toe/)
+[![demo](images/tic-tac-toe-demo.jpg)](https://gazzaar.github.io/tic-tac-toe/)
 
 ### Features
 
